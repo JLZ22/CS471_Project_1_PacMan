@@ -75,6 +75,20 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def dfs_helper(problem: SearchProblem, curr_state, visited) -> List[Directions]:
+    '''
+    Helper function for depthFirstSearch. Recursively searches for the goal state.
+    '''
+    if problem.isGoalState(curr_state):
+        return []
+    visited.add(curr_state)
+    for successor in problem.getSuccessors(curr_state):
+        if successor[0] not in visited:
+            path = dfs_helper(problem, successor[0], visited)
+            if path is not None:
+                return [successor[1]] + path
+    return None
+
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """
     Search the deepest nodes in the search tree first.
@@ -89,8 +103,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return dfs_helper(problem, problem.getStartState(), set())
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
