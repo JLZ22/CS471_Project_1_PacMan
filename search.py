@@ -134,7 +134,24 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    to_visit = util.PriorityQueue()
+    visited = set()
+    to_visit.push((problem.getStartState(), [], 0), 0)
+
+    while not to_visit.isEmpty():
+        state, path, cost = to_visit.pop()
+        if problem.isGoalState(state):
+            return path
+        
+        if state in visited:
+            continue 
+
+        visited.add(state)
+
+        successors = problem.getSuccessors(state)
+        for successor in successors:
+            to_visit.push((successor[0], path + [successor[1]], cost+successor[2]), cost + successor[2])
+    
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None) -> float:
@@ -146,7 +163,29 @@ def nullHeuristic(state, problem=None) -> float:
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    to_visit = util.PriorityQueue()
+    start = problem.getStartState()
+    to_visit.push(start, 0)
+    previous = {}
+    g = {start: 0}
+
+    while not to_visit.isEmpty():
+        curr = to_visit.pop()
+        if problem.isGoalState(curr):
+            path = []
+            while curr in previous:
+                curr, direction = previous[curr]
+                path.append(direction)
+            path.reverse()
+            return path
+        
+        for state, direction, cost in problem.getSuccessors(curr):
+            new_cost = g.get(curr) + cost
+            if state not in g or new_cost < g[state]:
+                g[state] = new_cost
+                previous[state] = (curr, direction)
+                to_visit.update(state, new_cost + heuristic(state, problem))
+    
     util.raiseNotDefined()
 
 # Abbreviations
