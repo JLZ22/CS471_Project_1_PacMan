@@ -388,7 +388,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
             if walls[x][ty]:
                 num_walls[i] += 1
 
-    h = [dist + int(num_walls[i] * 2) for i, dist in enumerate(distances) if not state[2+i]]
+    h = [dist + int(num_walls[i] * 1.25) for i, dist in enumerate(distances) if not state[2+i]]
 
     return min(h) if h else 0
 
@@ -478,9 +478,10 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    
-    return 0
-
+    h = []
+    for food in foodGrid.asList():
+        h.append(mazeDistance(position,food,problem.startingGameState))
+    return max(h) if h else 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
