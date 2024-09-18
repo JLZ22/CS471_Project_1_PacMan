@@ -295,15 +295,26 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (*self.startingPosition, False, False, False, False)
+
+    def updateState(self, state):
+        x, y, f1, f2, f3, f4 = state
+        if (x, y) == self.corners[0]:
+            f1 = True
+        elif (x, y) == self.corners[1]:
+            f2 = True
+        elif (x, y) == self.corners[2]:
+            f3 = True
+        elif (x, y) == self.corners[3]:
+            f4 = True
+        return (x, y, f1, f2, f3, f4)
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        state = self.updateState(state)
+        return state[2] and state[3] and state[4] and state[5]
 
     def getSuccessors(self, state: Any):
         """
@@ -315,17 +326,18 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        state = self.updateState(state)
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x, y, f1, f2, f3, f4 = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                successors.append(((nextx, nexty, f1, f2, f3, f4), action, 1)) 
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -342,8 +354,6 @@ class CornersProblem(search.SearchProblem):
             x, y = int(x + dx), int(y + dy)
             if self.walls[x][y]: return 999999
         return len(actions)
-
-
 
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
